@@ -10,7 +10,8 @@ environment:
 dependencies:
   args: ^2.4.2
   dcli: ^4.0.1-beta.4
-  mime: ^1.0.5
+  mime:
+    path: ../mime-mp4Audio
   path: ^1.9.0
 
 dev_dependencies:
