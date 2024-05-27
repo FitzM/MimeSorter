@@ -17,12 +17,18 @@ void mainMimeTyperFunction(String targetDirectory) async {
   }
 }
 
-moveFiles(FileSystemEntity targetFile, String targetDirectory) async {
-  print(formatMimeType(await getTypesLogic(targetFile)));
-}
+moveFiles(FileSystemEntity targetFile, String targetDirectory) async {}
 
 logFiles(FileSystemEntity targetFile, String dir) async {
-  print(formatMimeType(await getTypesLogic(targetFile), true));
+  const indentWidth = 15;
+  var typesFromLogicFunction = await getTypesLogic(targetFile);
+  var formattedTypesMicro = formatMimeType(typesFromLogicFunction, false);
+  var formattedTypesMacro = formatMimeType(typesFromLogicFunction, true);
+  print("""
+${'======== File Name:'.padRight(indentWidth + 8)}  ${targetFile.path}  
+         ${'MacroType:'.padRight(indentWidth)} $formattedTypesMacro 
+         ${'MicroType:'.padRight(indentWidth)} $formattedTypesMicro
+         """);
 }
 
 String checkPath(String targetDirectory) {
@@ -65,6 +71,7 @@ Future<String> findExifType(String filePath) async {
       .replaceFirst("mime type ", "")
       .replaceFirst(":", "")
       .trim();
+  print("/===== ExifToolUsed:  $exifToolTypeString =======/");
 
   return exifToolTypeString;
 }
@@ -89,8 +96,6 @@ moveFileFunction(FileSystemEntity targetFile, String macroTypeDirectory) {
         : print(error);
   }
 }
-
-
 
 //
 //
