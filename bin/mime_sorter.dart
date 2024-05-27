@@ -59,18 +59,21 @@ void main(List<String> arguments) {
     if (results.wasParsed('verbose')) {
       verbose = true;
     }
-    var targetDirectory =
-        results.option('source_Directory') ?? Directory.current.path;
-    targetDirectory = p.isAbsolute(targetDirectory)
-        ? targetDirectory
-        : p.absolute(targetDirectory);
-    mimeTyper(targetDirectory);
-
     // Act on the arguments provided.
     print('Positional arguments: ${results.rest}');
     if (verbose) {
       print('[VERBOSE] All arguments: ${results.arguments}');
     }
+    //
+    //SPACER
+    //SPACER
+    //
+    var targetDirectory =
+        results.option('source_Directory') ?? Directory.current.path;
+    targetDirectory = p.isAbsolute(targetDirectory)
+        ? targetDirectory
+        : p.absolute(targetDirectory);
+    mainMimeTyperFunction(targetDirectory);
   } on FormatException catch (e) {
     // Print usage information if an invalid argument was provided.
     print(e.message);
