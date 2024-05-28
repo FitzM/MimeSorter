@@ -12,12 +12,37 @@ void mainMimeTyperFunction(String targetDirectory) async {
       .list(recursive: true, followLinks: true);
 
   await for (var fileToSort in files) {
-    //moveFiles(fileToSort, targetDirectory);
-    logFiles(fileToSort, targetDirectory);
+    moveFiles(fileToSort, targetDirectory);
+    // logFiles(fileToSort, targetDirectory);
   }
 }
 
-moveFiles(FileSystemEntity targetFile, String targetDirectory) async {}
+Future<void> moveFiles(
+    FileSystemEntity targetFile, String targetDirectory) async {
+  var targetFilePath = targetFile.path;
+  var typesFromLogicFunction = await getTypesLogic(targetFile);
+  var dirFromType = formatMimeType(typesFromLogicFunction);
+  dirFromType =
+      dirFromType.contains("/") ? dirFromType.split("/").last : dirFromType;
+  var targetDirPath = p.join(targetDirectory, dirFromType);
+  var fileRenamePath = p.join(targetDirPath, p.basename(targetFilePath));
+  if (!Directory(targetDirPath).existsSync()) {
+    try {
+      Directory(targetDirPath).createSync(recursive: true);
+    } catch (error) {
+      if (error.toString().contains("Not a directory")) {
+        Directory(targetDirPath).createSync(recursive: true);
+      }
+    }
+  }
+  try {
+    await (targetFile as File).rename(fileRenamePath);
+    print('File moved to $fileRenamePath');
+  } catch (error) {
+    await (targetFile as File).rename(fileRenamePath);
+    print('Error moving file: $error');
+  }
+}
 
 logFiles(FileSystemEntity targetFile, String dir) async {
   const indentWidth = 15;
@@ -79,23 +104,11 @@ Future<String> findExifType(String filePath) async {
 String formatMimeType(String mimeType, [bool macroOrMicro = false]) {
   var splitFormat = mimeType.split("/");
   var formattedMimeType =
-      (macroOrMicro ? splitFormat.firstOrNull : splitFormat.lastOrNull) ??
+      (macroOrMicro ? splitFormat.lastOrNull : splitFormat.firstOrNull) ??
           "Unknown";
   return formattedMimeType;
 }
 
-moveFileFunction(FileSystemEntity targetFile, String macroTypeDirectory) {
-  String newDirectoryName =
-      p.join(p.dirname(targetFile.path), macroTypeDirectory);
-  Directory(newDirectoryName).createSync();
-  try {
-    move(targetFile.path, newDirectoryName);
-  } catch (error) {
-    error.toString().contains("The 'from' argument")
-        ? print("FROM ERROR!!")
-        : print(error);
-  }
-}
 
 //
 //
