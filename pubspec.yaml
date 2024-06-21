@@ -1,15 +1,15 @@
-name: mime_sorter
+name: mime_parser
 description: A sample command-line application with basic argument parsing.
 version: 0.0.1
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.3.4
+  sdk: ^3.4.3
 
 # Add regular dependencies here.
 dependencies:
   args: ^2.4.2
-  dcli: ^4.0.1-beta.4
+  dcli: ^4.0.1
   mime: ^1.0.5
   path: ^1.9.0
 
