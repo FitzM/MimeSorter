@@ -3,7 +3,7 @@ import 'package:mime/mime.dart';
 import 'package:dcli/dcli.dart';
 import 'package:path/path.dart' as p;
 import 'package:args/args.dart';
-import 'lib/addMagicNumbers.dart';
+import 'lib/mime_magic_numbers.dart';
 
 var movedCounter = 0;
 var errorCounter = 0;
