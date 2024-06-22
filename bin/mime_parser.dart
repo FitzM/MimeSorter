@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:mime/mime.dart';
 import 'package:dcli/dcli.dart';
 import 'package:path/path.dart' as p;
 import 'package:args/args.dart';
-import 'lib/mime_magic_numbers.dart';
+import 'package:mime_parser/mime_magic_numbers.dart';
 
 var movedCounter = 0;
 var errorCounter = 0;
@@ -19,7 +18,6 @@ ArgParser buildParser() {
 }
 
 void main(List<String> arguments) async {
-  addAllExtraMagicNumbers();
   final ArgParser argParser = buildParser();
 
   final ArgResults results = argParser.parse(arguments);
@@ -44,12 +42,7 @@ Future<void> sortDirectory(String sortDirectory) async {
 
   await for (final FileSystemEntity file in fileStream) {
     if (file is File) {
-      final headerBytes = file
-          .openRead(0, defaultMagicNumbersMaxLength)
-          .toList()
-          .then((bytes) => bytes.expand((byte) => byte).toList());
-      final mimeType =
-          lookupMimeType(file.path, headerBytes: await headerBytes);
+      final mimeType = await getMimeTypeByMagicNumbers(file);
       var typeDirectory = mimeType?.split("/").first.toLowerCase() ?? "unknown";
       var fileName = p.basename(file.path);
       await Directory(p.join(sortDirectory, typeDirectory))
@@ -66,4 +59,27 @@ Future<void> sortDirectory(String sortDirectory) async {
       print("Moved $fileName");
     }
   }
+}
+
+Future<String?> getMimeTypeByMagicNumbers(File file) async {
+  final bytes = await file.openRead(0, 1024).first; // Read first 1024 bytes
+
+  for (var magicNumber in mimeMagicNumbers) {
+    bool match = true;
+    for (var i = 0; i < magicNumber.pattern.length; i++) {
+      if (magicNumber.offset + i >= bytes.length) {
+        match = false;
+        break;
+      }
+      if (bytes[magicNumber.offset + i] != magicNumber.pattern[i]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      return magicNumber.mimeType;
+    }
+  }
+
+  return null; // Unknown MIME type
 }

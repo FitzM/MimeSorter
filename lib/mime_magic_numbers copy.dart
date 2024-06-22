@@ -1,14 +1,9 @@
-// ignore: file_names
-import 'package:mime/mime.dart';
-
 class MimeMagicNumberObject {
-  final List<int> headerBytes;
+  final List<int> header;
   final String mimeType;
-  List<int>? mask;
+  final List<int>? mask;
 
-  MimeMagicNumberObject(this.headerBytes, this.mimeType, {this.mask}) {
-    mask = mask ?? List.filled(headerBytes.length, 0xFF);
-  }
+  MimeMagicNumberObject(this.header, this.mimeType, {this.mask});
 }
 
 final mimeMagicNumbers = [
@@ -41751,20 +41746,3 @@ final mimeMagicNumbers = [
         0xff,
       ]),
 ];
-
-void addMagicNumbers(
-    MimeTypeResolver resolver, MimeMagicNumberObject magicNumberObject) {
-  resolver.addMagicNumber(
-    magicNumberObject.headerBytes,
-    magicNumberObject.mimeType,
-    mask: magicNumberObject.mask,
-  );
-}
-
-void addAllExtraMagicNumbers() {
-  final resolver = MimeTypeResolver();
-  for (final magicNumber in mimeMagicNumbers) {
-    addMagicNumbers(resolver, magicNumber);
-  }
-  print("Extra Magic Added");
-}
